@@ -9,7 +9,7 @@ const katex = require("rehype-katex");
 /** @type {import('@docusaurus/types').Config} */
 const config = {
     title: "Bunni Docs",
-    url: "https://docs.bunni.pro",
+    url: "https://docs.bunni.xyz",
     baseUrl: "/",
     onBrokenLinks: "throw",
     onBrokenMarkdownLinks: "warn",
@@ -67,19 +67,19 @@ const config = {
                 items: [
                     {
                         type: "doc",
-                        docId: "intro",
+                        docId: "v2/overview",
                         position: "left",
                         label: "Introduction",
                     },
                     {
                         type: "doc",
-                        docId: "tokenomics/lit",
+                        docId: "v2/technical/overview",
                         position: "left",
-                        label: "Tokenomics",
+                        label: "Contracts",
                     },
                     {
                         type: "doc",
-                        docId: "guides/lp",
+                        docId: "v2/guides/creating-a-pool/initialization",
                         position: "left",
                         label: "Guides",
                     },
@@ -94,28 +94,11 @@ const config = {
                 style: "dark",
                 links: [
                     {
-                        title: "Github",
-                        items: [
-                            {
-                                label: "bunni",
-                                href: "https://github.com/zeframlou/bunni",
-                            },
-                            {
-                                label: "gauge-foundry",
-                                href: "https://github.com/timeless-fi/gauge-foundry",
-                            },
-                            {
-                                label: "options-token",
-                                href: "https://github.com/timeless-fi/options-token",
-                            },
-                        ],
-                    },
-                    {
                         title: "Community",
                         items: [
                             {
                                 label: "Discord",
-                                href: "https://discord.gg/khDQVZm7E4",
+                                href: "https://discord.gg/timelessfi",
                             },
                             {
                                 label: "Twitter",
@@ -128,11 +111,7 @@ const config = {
                         items: [
                             {
                                 label: "Home page",
-                                href: "https://bunni.pro",
-                            },
-                            {
-                                label: "Blog",
-                                href: "https://blog.timelessfi.com",
+                                href: "https://bunni.xyz",
                             },
                         ],
                     },
@@ -141,6 +120,7 @@ const config = {
             prism: {
                 theme: lightCodeTheme,
                 darkTheme: darkCodeTheme,
+                additionalLanguages: ['solidity'],
             },
             colorMode: {
                 // "light" | "dark"
