@@ -142,14 +142,14 @@ Remember to ensure that all values are within their appropriate ranges and that 
 The `ldfParams` are encoded as follows:
 
 ```
-| shiftMode (1 byte) | offset (3 bytes) | length (2 bytes) | alpha (4 bytes) | weightMain (4 bytes) | unused (18 bytes) |
+| shiftMode (1 byte) | offset (3 bytes) | length (2 bytes) | alpha (4 bytes) | weightCarpet (4 bytes) | unused (18 bytes) |
 ```
 
 - **shiftMode** (1 byte): A `uint8` value representing the shift mode (0 for BOTH, 1 for LEFT, 2 for RIGHT, 3 for STATIC).
 - **offset** (3 bytes): An `int24` value representing the offset applied to the TWAP tick to get the minTick. In ticks, not ricks.
 - **length** (2 bytes): An `int16` value representing the length of the geometric distribution in number of rounded ticks.
 - **alpha** (4 bytes): A `uint32` value representing the alpha parameter of the geometric distribution.
-- **weightMain** (4 bytes): A `uint32` value representing the weight of the main (geometric) distribution.
+- **weightCarpet** (4 bytes): A `uint32` value representing the weight of the carpet distribution.
 - **unused** (18 bytes): Unused bytes, should be set to zero.
 
 ### Important Notes
@@ -157,9 +157,9 @@ The `ldfParams` are encoded as follows:
 1. The actual `minTick` is calculated as `roundTickSingle(twapTick + offset, tickSpacing)` when `shiftMode` is not STATIC.
 2. For STATIC mode, `offset` represents the absolute `minTick` and must be aligned to tickSpacing.
 3. The `alpha` value is scaled by `Q96 / ALPHA_BASE` internally. `ALPHA_BASE` is `1e8`.
-4. The `weightMain` value uses 9 decimals (i.e., a `weightMain` of 500000000 represents 0.5 or 50%).
+4. The `weightCarpet` value uses 18 decimals (i.e., a `weightCarpet` of 500000000000000000 represents 0.5 or 50%).
 5. The distribution is bounded to be within the range of usable ticks. If `minTick` is outside this range, it will be adjusted accordingly.
-6. The `weightMain` must be non-zero and less than `WEIGHT_BASE` (1e9).
+6. The `weightCarpet` must be non-zero. It is intentionally bounded to a small max value (`type(uint32).max / 1e18`) because larger values allocates too many tokens at extreme tick values.
 7. The minimum liquidity density of the geometric part must be greater than `MIN_LIQUIDITY_DENSITY` (Q96 / 1e3).
 
 ### Example Usage
@@ -172,9 +172,9 @@ function encodeParams(
     int24 offset,
     int16 length,
     uint32 alpha,
-    uint32 weightMain
+    uint32 weightCarpet
 ) pure returns (bytes32) {
-    return abi.encodePacked(uint8(shiftMode), offset, length, alpha, weightMain);
+    return abi.encodePacked(uint8(shiftMode), offset, length, alpha, weightCarpet);
 }
 ```
 
@@ -187,7 +187,7 @@ Remember to ensure that all values are within their appropriate ranges and that 
 The `ldfParams` are encoded as follows:
 
 ```
-| shiftMode (1 byte) | offset (3 bytes) | length0 (2 bytes) | alpha0 (4 bytes) | weight0 (4 bytes) | length1 (2 bytes) | alpha1 (4 bytes) | weight1 (4 bytes) | weightMain (4 bytes) | unused (4 bytes) |
+| shiftMode (1 byte) | offset (3 bytes) | length0 (2 bytes) | alpha0 (4 bytes) | weight0 (4 bytes) | length1 (2 bytes) | alpha1 (4 bytes) | weight1 (4 bytes) | weightCarpet (4 bytes) | unused (4 bytes) |
 ```
 
 - **shiftMode** (1 byte): A `uint8` value representing the shift mode (0 for BOTH, 1 for LEFT, 2 for RIGHT, 3 for STATIC).
@@ -198,7 +198,7 @@ The `ldfParams` are encoded as follows:
 - **length1** (2 bytes): An `int16` value representing the length of the left distribution in number of rounded ticks.
 - **alpha1** (4 bytes): A `uint32` value representing the alpha parameter of the left distribution.
 - **weight1** (4 bytes): A `uint32` value representing the weight of the left distribution.
-- **weightMain** (4 bytes): A `uint32` value representing the weight of the main (double geometric) distribution.
+- **weightCarpet** (4 bytes): A `uint32` value representing the weight of the carpet distribution.
 - **unused** (4 bytes): Unused bytes, should be set to zero.
 
 ### Important Notes
@@ -206,9 +206,9 @@ The `ldfParams` are encoded as follows:
 1. The actual `minTick` is calculated as `roundTickSingle(twapTick + offset, tickSpacing)` when `shiftMode` is not STATIC.
 2. For STATIC mode, `offset` represents the absolute `minTick` and must be aligned to tickSpacing.
 3. The `alpha0` and `alpha1` values are scaled by `Q96 / ALPHA_BASE` internally. `ALPHA_BASE` is `1e8`.
-4. The `weightMain` value uses 9 decimals (i.e., a value of 500000000 represents 0.5 or 50%).
+4. The `weightCarpet` value uses 18 decimals (i.e., a value of 500000000000000000 represents 0.5 or 50%).
 5. The distribution is bounded to be within the range of usable ticks. If `minTick` is outside this range, it will be adjusted accordingly.
-6. The `weightMain` must be non-zero and less than `WEIGHT_BASE` (1e9).
+6. The `weightCarpet` must be non-zero. It is intentionally bounded to a small max value (`type(uint32).max / 1e18`) because larger values allocates too many tokens at extreme tick values.
 7. The minimum liquidity density of each geometric part must be greater than `MIN_LIQUIDITY_DENSITY` (Q96 / 1e3).
 8. The total length of the distribution is `length0 + length1`.
 9. `weight0` and `weight1` don't use any particular number of decimals, they're relative weights. For example, `weight0` can be `8` and `weight1` can be `2`, and the respective weights would be `8 / 10 = 80%` and `2 / 10 = 20%`.
@@ -227,9 +227,9 @@ function encodeParams(
     int16 length1,
     uint32 alpha1,
     uint32 weight1,
-    uint32 weightMain
+    uint32 weightCarpet
 ) pure returns (bytes32) {
-    return abi.encodePacked(uint8(shiftMode), offset, length0, alpha0, weight0, length1, alpha1, weight1, weightMain);
+    return abi.encodePacked(uint8(shiftMode), offset, length0, alpha0, weight0, length1, alpha1, weight1, weightCarpet);
 }
 ```
 
@@ -264,3 +264,31 @@ The `ldfParams` are encoded as follows:
 5. The `alpha` and `altAlpha` must be on different sides of 1 (i.e., one < 1 and one > 1).
 6. The `altThreshold` must be within the range `(minTick, minTick + length * tickSpacing)`.
 7. The distribution is bounded to be within the range of usable ticks.
+
+### Example Usage
+
+Here's an example of how to encode the parameters:
+
+```solidity
+function encodeParams(
+    int24 minTick,
+    int16 length,
+    uint32 alpha,
+    uint32 altAlpha,
+    int24 altThreshold,
+    bool altThresholdDirection
+) pure returns (bytes32) {
+    return abi.encodePacked(
+        uint8(3), // STATIC
+        minTick,
+        length,
+        alpha,
+        bytes1(0), // unused byte
+        altAlpha,
+        altThreshold,
+        altThresholdDirection
+    );
+}
+```
+
+Remember to ensure that all values are within their appropriate ranges and that `minTick` is aligned with `tickSpacing`.
