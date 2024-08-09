@@ -14,7 +14,7 @@ BunniToken inherits from the following interfaces:
 
 - IERC20: Standard ERC20 interface
 - IERC20Referrer: Interface for tracking referrers of token holders
-- IERC20Lockable: Interface for account locking, which is useful for implementing transferless staking contracts
+- [IERC20Lockable](./lockable): Interface for account locking, which is useful for implementing transferless staking contracts
 - IOwnable: Interface for ownership management
 - IUnlockCallback: Uniswap v4 unlock callback interface
 
