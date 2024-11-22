@@ -6,7 +6,7 @@ sidebar_position: 4
 
 # Autonomous Rebalancing
 
-**Autonomous rebalancing** is a key feature of Bunni v2 that enables pools to maintain optimal token ratios without requiring external keepers. This is particularly important for pools that use [shapeshifting](./shapeshifting) and/or [rehypothecation](./rehypothication).
+**Autonomous rebalancing** is a key feature of Bunni v2 that enables pools to maintain optimal token ratios without requiring external keepers. This is particularly important for pools that use [shapeshifting](./shapeshifting) and/or [rehypothecation](./rehypothecation).
 
 ## Why Autonomous Rebalancing?
 

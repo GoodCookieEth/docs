@@ -8,7 +8,7 @@ sidebar_position: 5
 
 ## The Problem: Sandwiching Attacks
 
-When a pool's liquidity is autonomously updated (a "surge" occurs), whether due to [LDF](./ldf) updates, [rehypothecation](./rehypothication) yields, or [autonomous rebalances](./rebalancing), it can create a sandwiching opportunity. An attacker could potentially sandwich the update with two swaps and make a profit at the expense of the LPs.
+When a pool's liquidity is autonomously updated (a "surge" occurs), whether due to [LDF](./ldf) updates, [rehypothecation](./rehypothecation) yields, or [autonomous rebalances](./rebalancing), it can create a sandwiching opportunity. An attacker could potentially sandwich the update with two swaps and make a profit at the expense of the LPs.
 
 ## The Solution: Surge Fee
 
